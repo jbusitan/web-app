@@ -1,24 +1,47 @@
 
-const sqlite3 = require('sqlite3').verbose();
+const Item = require('../models/itemModel');
 
-const db = new sqlite3.Database('./database.db', (err) => {
-  if (err) {
-    console.error('Error opening database:', err);
-  } else {
-    console.log('Connected to the SQLite database.');
-  }
-});
+// Get all items
+const getAllItems = (req, res) => {
+  Item.getItems((err, items) => {
+    if (err) {
+      return res.status(500).send('Error retrieving items');
+    }
+    res.render('index', { items });
+  });
+};
 
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS items (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      description TEXT,
-      date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-  console.log('Table "items" created (if it didn\'t exist)');
-});
+// Add a new item
+const addItem = (req, res) => {
+  const { name, description } = req.body;
+  Item.addItem(name, description, (err, id) => {
+    if (err) {
+      return res.status(500).send('Error adding item');
+    }
+    res.redirect('/');
+  });
+};
 
-db.close();
+// Edit an item
+const editItem = (req, res) => {
+  const { id, name, description } = req.body;
+  Item.updateItem(id, name, description, (err) => {
+    if (err) {
+      return res.status(500).send('Error updating item');
+    }
+    res.redirect('/');
+  });
+};
+
+// Delete an item
+const deleteItem = (req, res) => {
+  const { id } = req.params;
+  Item.deleteItem(id, (err) => {
+    if (err) {
+      return res.status(500).send('Error deleting item');
+    }
+    res.redirect('/');
+  });
+};
+
+module.exports = { getAllItems, addItem, editItem, deleteItem };
