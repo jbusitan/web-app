@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Items CRUD</title>
+</head>
+<body>
+  <h1>Items List</h1>
+
+  <form action="/add" method="POST">
+    <input type="text" name="name" placeholder="Item name" required>
+    <input type="text" name="description" placeholder="Description">
+    <button type="submit">Add Item</button>
+  </form>
+
+  <ul>
+    <% items.forEach(item => { %>
+      <li>
+        <strong><%= item.name %></strong> - <%= item.description %> (created: <%= item.date_created %>)
+        <form action="/edit" method="POST" style="display:inline;">
+          <input type="hidden" name="id" value="<%= item.id %>">
+          <input type="text" name="name" value="<%= item.name %>">
+          <input type="text" name="description" value="<%= item.description %>">
+          <button type="submit">Edit</button>
+        </form>
+        <a href="/delete/<%= item.id %>">Delete</a>
+      </li>
+    <% }) %>
+  </ul>
+</body>
+</html>
